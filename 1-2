@@ -1,0 +1,40 @@
+#read files#
+library(readxl)
+hrdata <- read_excel("AIHR_Statistics_dataset_2018.xlsx")
+View(hrdata)
+
+#options#
+options(scipen=999)
+
+#check normality#
+#install packages e1071 to determine skewness#
+install.packages("e1071")
+#install packages car to do levene test of variance#
+install.packages("car")
+
+#normality#
+summary(object = hrdata$CSMnetworking)
+hist(x=hrdata$CSMnetworking,breaks=16)
+e1071::skewness(x=hrdata$CSMnetworking,type=2)
+
+#interval#
+hrdata$CSMmobility
+
+#correlation analysis with potential outliers#
+cor(x=hrdata$CSMnetworking,y=hrdata$MEANINNOVATION)
+cor.test(x=hrdata$CSMnetworking,y=hrdata$MEANINNOVATION)
+
+#check for outliers#
+boxplot(x=hrdata$CSMnetworking)
+bp_results<-boxplot.stats(x=hrdata$CSMnetworking)
+
+#subset hrdata based on the extreme values stored in bp_results$out#
+! hrdata$CSMnetworking%in% bp_results$out
+
+#no outlier#
+hrdata_no_outlier<-subset(x = hrdata, subset= ! hrdata$CSMnetworking %in% bp_results$out)
+boxplot(x=hrdata_no_outlier$CSMnetworking)
+
+#correlation analysis without potential outliers#
+cor(x=hrdata_no_outlier$CSMnetworking,y=hrdata_no_outlier$MEANINNOVATION)
+cor.test(x=hrdata_no_outlier$CSMnetworking,y=hrdata_no_outlier$MEANINNOVATION)
