@@ -1,0 +1,32 @@
+#This is a code for AI-HR People analytics certification project#
+#read excel data#
+library(readxl)
+hrdata<- read_excel("AIHR_Statistics_dataset_2018.xlsx")
+View(hrdata)
+
+#explore data innovation and age#
+hrdata$MEANINNOVATION
+hrdata$CLAGE
+
+#create an age split column
+hrdata$age_split<-hrdata$CLAGE>= 35
+
+#check assumptions#
+#install packages e1071 to determine skewness#
+install.packages("e1071")
+#install packages car to do levene test of variance#
+install.packages("car")
+
+#normality#
+summary(object = hrdata$MEANINNOVATION)
+hist(x=hrdata$MEANINNOVATION)
+e1071::skewness(x=hrdata$MEANINNOVATION,type=2)
+
+#interval#
+hrdata$MEANINNOVATION
+
+#homogeneity of variance#
+car::leveneTest(hrdata$MEANINNOVATION ~ factor(hrdata$age_split))
+
+#conduct a t.test#
+t.test(hrdata$MEANINNOVATION ~ hrdata$age_split)
