@@ -1,0 +1,41 @@
+#import files#
+library(readxl)
+hrdata <- read_excel("AIHR_Statistics_dataset_2018.xlsx")
+View(hrdata)
+
+#select relevant columns of the datasets#
+cnames<-colnames(hrdata)
+
+#variables that correspond to mean data points#
+grepl(pattern="MEAN",x=cnames)
+cnames_mean<-subset(x=cnames,grepl(pattern="MEAN",x=cnames))
+
+#variables that correspond to control variables
+grepl(pattern="CL",x=cnames)
+cnames_control<-subset(x=cnames,grepl(pattern="CL",x=cnames))
+
+#combine two vectors#
+cnames_combined<- c(cnames_mean,cnames_control)
+cnames_combined
+
+#subset our hrdata dataframa selecting only the column in cnames_combined#
+hrdata_selection<-subset(x=hrdata, select=cnames_combined)
+
+#simple correlation matrix using the base function#
+cmat<- cor(x=hrdata_selection,use="pairwise.complete.obs")
+round(x=cmat,digits=3)
+
+#advanced correlation matrix using the hmsic package#
+install.packages("Hmisc")
+cmat2<-Hmisc::rcorr(x=as.matrix(hrdata_selection))
+cmat2$r
+cmat2$P
+
+source("https://media2-production.mightynetworks.com/asset/6581226/cor_matrix_stars.R?_gl=1*1mhrru0*_ga*MTYxMDEyNzYyMS4xNjYyMzg3Njk4*_ga_T49FMYQ9FZ*MTY2ODQwNTc5MS4yOC4xLjE2Njg0MDY0OTIuMC4wLjA")
+cmat2_formatted<-cor_matrix_stars(df=hrdata_selection)
+View(cmat2_formatted)
+
+
+#bonus 2: visualizing plot
+install.packages("corrplot")
+corrplot::corrplot(corr=cmat)
